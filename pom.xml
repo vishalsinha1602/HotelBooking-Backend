@@ -48,6 +48,14 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- Source: https://mvnrepository.com/artifact/org.modelmapper/modelmapper -->
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>3.2.6</version>
+			<scope>compile</scope>
+		</dependency>
+
 		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
