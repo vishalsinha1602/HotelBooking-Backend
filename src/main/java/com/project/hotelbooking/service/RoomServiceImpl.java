@@ -6,6 +6,7 @@ import com.project.hotelbooking.entity.Room;
 import com.project.hotelbooking.exception.ResourceNotFoundException;
 import com.project.hotelbooking.repository.HotelRepository;
 import com.project.hotelbooking.repository.RoomRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -71,22 +72,15 @@ public class RoomServiceImpl  implements RoomService{
         return modelMapper.map(room,RoomDto.class);
     }
 
+    @Transactional
     @Override
     public void deleteRoomById(Long roomId) {
-        log.info("Deleting room with id {}",roomId);
+        log.info("Deleting the room with ID: {}", roomId);
         Room room = roomRepository
                 .findById(roomId)
-                .orElseThrow(()->new ResourceNotFoundException("Hotel with id : " + roomId + " not found"));
-
-
-
-        inventoryService.deleteFutureInventories(room);
+                .orElseThrow(() -> new ResourceNotFoundException("Room not found with ID: "+roomId));
+        inventoryService.deleteAllInventories(room);
         roomRepository.deleteById(roomId);
-
-        //TODO: GIVING ERROR
-
-
-
     }
 
 
