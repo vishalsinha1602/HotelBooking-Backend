@@ -2,17 +2,20 @@ package com.project.hotelbooking.entity;
 
 import com.project.hotelbooking.entity.enums.BookingStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
 @Getter @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Booking {
 
     @Id
@@ -48,9 +51,9 @@ public class Booking {
     private  LocalDateTime updatedAt;
 
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="payment_id")
-    private Payment payment;
+    @Column(nullable = false,precision = 10,scale = 2)
+    private BigDecimal amount;
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
