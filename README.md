@@ -63,7 +63,7 @@ This project is built in a **module-based learning approach**, where each concep
 
 ---
 
-### 🚧 Module 4: Production Ready Features *(In Progress)*
+### 🚧 Module 4: Production Ready Features 
 
 * Global exception handling
 * Logging
