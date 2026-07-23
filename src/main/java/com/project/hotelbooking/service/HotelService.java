@@ -1,7 +1,8 @@
 package com.project.hotelbooking.service;
 
+import com.project.hotelbooking.dto.HotelInfoDto;
 import com.project.hotelbooking.dto.HotelDto;
-import com.project.hotelbooking.entity.Hotel;
+
 
 public interface HotelService {
 
@@ -15,4 +16,5 @@ public interface HotelService {
 
     void activateHotel( Long hotelId);
 
+    HotelInfoDto getHotelInfoById(Long hotelId);
 }
