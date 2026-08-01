@@ -1,7 +1,11 @@
 package com.project.hotelbooking.service;
 
+import com.project.hotelbooking.dto.BookingRequest;
 import com.project.hotelbooking.dto.HotelInfoDto;
 import com.project.hotelbooking.dto.HotelDto;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 
 public interface HotelService {
@@ -17,4 +21,10 @@ public interface HotelService {
     void activateHotel( Long hotelId);
 
     HotelInfoDto getHotelInfoById(Long hotelId);
+
+
+
+    Page<HotelDto> getAllHotels(int page, int size);
+
+
 }

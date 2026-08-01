@@ -13,6 +13,9 @@ import com.project.hotelbooking.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -131,6 +134,19 @@ public class HotelServiceImpl implements HotelService{
                 .toList();
 
         return new HotelInfoDto(modelMapper.map(hotel, HotelDto.class), rooms);
+    }
+
+
+    //    SELECT *
+    //    FROM hotel
+    //    LIMIT 10 OFFSET 0;
+    @Override
+    public Page<HotelDto> getAllHotels(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return hotelRepository.findAll(pageable)
+                .map(hotel -> modelMapper.map(hotel, HotelDto.class));
     }
 
 

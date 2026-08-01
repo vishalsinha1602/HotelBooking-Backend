@@ -1,13 +1,16 @@
 package com.project.hotelbooking.controller;
 
 import com.project.hotelbooking.advice.ApiResponse;
-import com.project.hotelbooking.dto.HotelDto;
+import com.project.hotelbooking.dto.*;
 import com.project.hotelbooking.service.HotelService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -66,5 +69,18 @@ public class HotelController {
 
         return ResponseEntity.noContent().build();
     }
+
+
+    @GetMapping
+    public ResponseEntity<Page<HotelDto>> getAllHotels(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Page<HotelDto> hotelPage = hotelService.getAllHotels(page, size);
+        return ResponseEntity.ok(hotelPage);
+    }
+
+
+
 
 }
