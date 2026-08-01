@@ -1,7 +1,5 @@
 package com.project.hotelbooking.dto;
 
-
-import com.project.hotelbooking.entity.Hotel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +8,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HotelPriceDto {
-    private Hotel hotel;
+
+    private Long hotelId;
+    private String hotelName;
+    private String city;
+    private String[] photos;
+    private String[] amenities;
     private Double price;
 }

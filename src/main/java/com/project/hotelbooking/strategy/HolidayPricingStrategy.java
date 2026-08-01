@@ -20,7 +20,6 @@ public class HolidayPricingStrategy implements PricingStrategy {
             price=price.multiply(BigDecimal.valueOf(1.25));
         }
 
-
         return price;
     }
 }

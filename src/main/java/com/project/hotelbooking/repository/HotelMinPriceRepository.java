@@ -15,13 +15,26 @@ import java.util.Optional;
 public interface HotelMinPriceRepository extends JpaRepository<HotelMinPrice,Long> {
 
     @Query("""
-SELECT new com.project.hotelbooking.dto.HotelPriceDto(i.hotel, AVG(i.price))
+SELECT new com.project.hotelbooking.dto.HotelPriceDto(
+    h.id,
+    h.name,
+    h.city,
+    h.photos,
+    h.amenities,
+    AVG(i.price)
+)
 FROM HotelMinPrice i
-WHERE i.hotel.city = :city
+JOIN i.hotel h
+WHERE h.city = :city
 AND i.date BETWEEN :startDate AND :endDate
-AND i.hotel.active = true
-AND (:roomsCount IS NULL OR 1=1)
-GROUP BY i.hotel
+AND h.active = true
+AND (:roomsCount IS NULL OR 1 = 1)
+GROUP BY
+    h.id,
+    h.name,
+    h.city,
+    h.photos,
+    h.amenities
 HAVING (:dateCount IS NULL OR COUNT(i.date) >= 1)
 """)
     Page<HotelPriceDto> findHotelsWithAvailableInventory(

@@ -5,22 +5,24 @@ import com.project.hotelbooking.dto.HotelDto;
 import com.project.hotelbooking.dto.RoomDto;
 import com.project.hotelbooking.entity.Hotel;
 import com.project.hotelbooking.entity.Room;
+import com.project.hotelbooking.entity.User;
 import com.project.hotelbooking.exception.ResourceNotFoundException;
+import com.project.hotelbooking.exception.UnAuthorisedException;
 import com.project.hotelbooking.repository.HotelRepository;
 import com.project.hotelbooking.repository.RoomRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class HotelServiceImpl implements HotelService {
+public class HotelServiceImpl implements HotelService{
 
     private final HotelRepository hotelRepository;
     private final ModelMapper modelMapper;
@@ -29,87 +31,94 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public HotelDto createNewHotel(HotelDto hotelDto) {
-        log.info("Creating a Hotel with name : {}", hotelDto);
-        //converting hotelDto->HotelEntity
-        Hotel hotel = modelMapper.map(hotelDto,Hotel.class);
+        log.info("Creating a new hotel with name: {}", hotelDto.getName());
+        Hotel hotel = modelMapper.map(hotelDto, Hotel.class);
         hotel.setActive(false);
-        hotel =hotelRepository.save(hotel);
-        log.info("Created a new Hotel with name : {}", hotelDto.getId());
-        return modelMapper.map(hotel,HotelDto.class) ;
-    }
 
-    @Override
-    public HotelDto getHotelById(Long id) {
-        log.info("Getting Hotel with id : {}", id);
-        Hotel hotel = hotelRepository
-                .findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Hotel with id : " + id + " not found"));
-        return modelMapper.map(hotel,HotelDto.class);
-    }
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        hotel.setOwner(user);
 
-    @Override
-    public HotelDto updateHotelById(Long id, HotelDto hotelDto) {
-
-        log.info("Updating hotel with id: {}", id);
-
-        // 1. Existing hotel fetch
-        Hotel hotel = hotelRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Hotel with id: " + id + " not found")
-                );
-        // 2. DTO → Existing Entity
-        modelMapper.map(hotelDto, hotel);
-
-        hotel.setId(id);
-        // 3. Save
         hotel = hotelRepository.save(hotel);
-
-        // 4. Return DTO
+        log.info("Created a new hotel with ID: {}", hotelDto.getId());
         return modelMapper.map(hotel, HotelDto.class);
     }
 
     @Override
-    @Transactional
+    public HotelDto getHotelById(Long id) {
+        log.info("Getting the hotel with ID: {}", id);
+        Hotel hotel = hotelRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Hotel not found with ID: "+id));
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if(!user.equals(hotel.getOwner())) {
+            throw new UnAuthorisedException("This user does not own this hotel with id: "+id);
+        }
+
+        return modelMapper.map(hotel, HotelDto.class);
+    }
+
+    @Override
+    public HotelDto updateHotelById(Long id, HotelDto hotelDto) {
+        log.info("Updating the hotel with ID: {}", id);
+        Hotel hotel = hotelRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Hotel not found with ID: "+id));
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(!user.equals(hotel.getOwner())) {
+            throw new UnAuthorisedException("This user does not own this hotel with id: "+id);
+        }
+
+        modelMapper.map(hotelDto, hotel);
+        hotel.setId(id);
+        hotel = hotelRepository.save(hotel);
+        return modelMapper.map(hotel, HotelDto.class);
+    }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional
     public void deleteHotelById(Long id) {
+        Hotel hotel = hotelRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Hotel not found with ID: "+id));
 
-        log.info("Deleting Hotel with id : {}", id);
-
-        Hotel hotel = hotelRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Hotel with id: " + id + " not found")
-                );
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(!user.equals(hotel.getOwner())) {
+            throw new UnAuthorisedException("This user does not own this hotel with id: "+id);
+        }
 
 
-
-        for(Room room: hotel.getRooms()){
+        for(Room room: hotel.getRooms()) {
             inventoryService.deleteAllInventories(room);
             roomRepository.deleteById(room.getId());
         }
-
         hotelRepository.deleteById(id);
-
-
     }
 
     @Override
     @Transactional
     public void activateHotel(Long hotelId) {
-        log.info("Activating Hotel with id : {}", hotelId);
+        log.info("Activating the hotel with ID: {}", hotelId);
+        Hotel hotel = hotelRepository
+                .findById(hotelId)
+                .orElseThrow(() -> new ResourceNotFoundException("Hotel not found with ID: "+hotelId));
 
-        Hotel hotel = hotelRepository.findById(hotelId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Hotel with id: " + hotelId + " not found")
-                );
-        hotel.setActive(true);
-        hotelRepository.save(hotel);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        for(Room room: hotel.getRooms()){
-            inventoryService.initializeRoomForAYear(room);
+        if(!user.equals(hotel.getOwner())) {
+            throw new UnAuthorisedException("This user does not own this hotel with id: "+hotelId);
         }
 
+        hotel.setActive(true);
 
+        // assuming only do it once
+        for(Room room: hotel.getRooms()) {
+            inventoryService.initializeRoomForAYear(room);
+        }
     }
 
+    //    public method
     @Override
     public HotelInfoDto getHotelInfoById(Long hotelId) {
         Hotel hotel = hotelRepository
@@ -123,5 +132,6 @@ public class HotelServiceImpl implements HotelService {
 
         return new HotelInfoDto(modelMapper.map(hotel, HotelDto.class), rooms);
     }
+
 
 }

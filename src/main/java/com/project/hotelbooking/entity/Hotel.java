@@ -1,7 +1,10 @@
 package com.project.hotelbooking.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.project.hotelbooking.entity.HotelContactInfo;
+import com.project.hotelbooking.entity.Room;
+import com.project.hotelbooking.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,9 +15,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @Table(name = "hotel")
 public class Hotel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,17 +29,17 @@ public class Hotel {
 
     private String city;
 
-    @Column(columnDefinition ="Text[]")
+    @Column(columnDefinition = "TEXT[]")
     private String[] photos;
 
-    @Column(columnDefinition ="Text[]")
+    @Column(columnDefinition = "TEXT[]")
     private String[] amenities;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    private  LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @Embedded
     private HotelContactInfo contactInfo;
@@ -42,14 +47,12 @@ public class Hotel {
     @Column(nullable = false)
     private Boolean active;
 
-    @ManyToOne
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private User owner;
 
     @OneToMany(mappedBy = "hotel")
     @JsonIgnore
     private List<Room> rooms;
 
-
 }
-
-
