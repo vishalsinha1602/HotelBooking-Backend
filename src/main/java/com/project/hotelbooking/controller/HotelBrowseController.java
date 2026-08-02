@@ -21,14 +21,12 @@ public class HotelBrowseController {
 
     @GetMapping("/search")
     public ResponseEntity<Page<HotelPriceDto>> searchHotels(@RequestBody HotelSearchRequest hotelSearchRequest) {
-
         var page = inventoryService.searchHotels(hotelSearchRequest);
         return ResponseEntity.ok(page);
     }
 
     @GetMapping("/{hotelId}/info")
     public ResponseEntity<HotelInfoDto> getHotelInfo(@PathVariable Long hotelId) {
-
         return ResponseEntity.ok(hotelService.getHotelInfoById(hotelId));
     }
 

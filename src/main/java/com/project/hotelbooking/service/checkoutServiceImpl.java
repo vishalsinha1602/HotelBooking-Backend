@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
+import static com.project.hotelbooking.util.AppUtil.getCurrentUser;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -27,12 +29,12 @@ public class checkoutServiceImpl implements CheckoutService {
     @Override
     public String getCheckoutSession(Booking booking, String successUrl, String failureUrl) {
         log.info("Creating session for booking with ID: {}", booking.getId());
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User currentUser = getCurrentUser();
 
         try {
             CustomerCreateParams customerParams = CustomerCreateParams.builder()
-                    .setName(user.getName())
-                    .setEmail(user.getEmail())
+                    .setName(currentUser.getName())
+                    .setEmail(currentUser.getEmail())
                     .build();
             Customer customer = Customer.create(customerParams);
 

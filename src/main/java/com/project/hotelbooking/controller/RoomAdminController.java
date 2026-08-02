@@ -2,6 +2,7 @@ package com.project.hotelbooking.controller;
 
 import com.project.hotelbooking.dto.RoomDto;
 import com.project.hotelbooking.service.RoomService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
@@ -40,6 +41,13 @@ public class RoomAdminController {
     public  ResponseEntity<Void> deleteRoomById(@PathVariable Long hotelId , @PathVariable Long roomId){
         roomService.deleteRoomById(roomId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{roomId}")
+    @Operation(summary = "Update a room", tags = {"Admin Inventory"})
+    public ResponseEntity<RoomDto> updateRoomById(@PathVariable Long hotelId, @PathVariable Long roomId,
+                                                  @RequestBody RoomDto roomDto) {
+        return ResponseEntity.ok(roomService.updateRoomById(hotelId, roomId, roomDto));
     }
 
 

@@ -3,11 +3,14 @@ package com.project.hotelbooking.entity;
 import com.project.hotelbooking.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -17,6 +20,7 @@ import java.util.stream.Collectors;
 @Entity
 @Getter
 @Setter
+
 @Table(name = "app_user")
 public class User implements UserDetails {
 
@@ -59,5 +63,7 @@ public class User implements UserDetails {
     public int hashCode() {
         return Objects.hashCode(getId());
     }
+
+
 }
 

@@ -1,10 +1,10 @@
 package com.project.hotelbooking.service;
 
-import com.project.hotelbooking.dto.HotelDto;
-import com.project.hotelbooking.dto.HotelPriceDto;
-import com.project.hotelbooking.dto.HotelSearchRequest;
+import com.project.hotelbooking.dto.*;
 import com.project.hotelbooking.entity.Room;
 import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public interface InventoryService  {
 
@@ -12,4 +12,9 @@ public interface InventoryService  {
     void deleteAllInventories(Room room);
 
     Page<HotelPriceDto> searchHotels(HotelSearchRequest hotelSearchRequest);
+
+    List<InventoryDto> getAllInventoryByRoom(Long roomId);
+
+
+    void updateInventory(Long roomId, UpdateInventoryRequestDto updateInventoryRequestDto);
 }

@@ -22,9 +22,7 @@ public interface HotelService {
 
     HotelInfoDto getHotelInfoById(Long hotelId);
 
-
-
-    Page<HotelDto> getAllHotels(int page, int size);
+    List<HotelDto> getAllHotels();
 
 
 }
